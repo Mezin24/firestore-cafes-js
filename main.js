@@ -9,6 +9,8 @@ import {
   doc,
   query,
   where,
+  orderBy,
+  updateDoc,
 } from 'firebase/firestore';
 import { displayCafe, addCity } from './utils.js';
 import './style.css';
@@ -60,7 +62,7 @@ filter.addEventListener('change', (e) => {
   const { value } = e.target;
   let q;
   if (!value) {
-    q = query(collection(db, 'cafes'));
+    q = query(collection(db, 'cafes'), orderBy('name', 'desc'));
   } else {
     q = query(collection(db, 'cafes'), where('city', '==', value));
   }
