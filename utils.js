@@ -14,3 +14,11 @@ export function displayCafe(cafe, parentNode) {
   li.append(cross);
   parentNode.insertAdjacentElement('afterbegin', li);
 }
+
+export function addCity(cafe, parentElement) {
+  const { city } = cafe;
+  const option = document.createElement('option');
+  option.value = city;
+  option.innerText = city;
+  parentElement.insertAdjacentElement('beforeend', option);
+}

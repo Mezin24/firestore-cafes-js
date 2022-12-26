@@ -7,21 +7,29 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  query,
+  where,
 } from 'firebase/firestore';
-import { displayCafe } from './utils.js';
+import { displayCafe, addCity } from './utils.js';
 import './style.css';
 
 const cafeList = document.querySelector('#cafe-list');
 const form = document.getElementById('add-cafe-form');
+const filter = document.getElementById('filter');
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-onSnapshot(collection(db, 'cafes'), (snapshot) => {
-  cafeList.innerHTML = '';
+const unsub = onSnapshot(collection(db, 'cafes'), (snapshot) => {
+  filter.innerHTML = ' <option value="">--select city--</option>';
+  const cities = [];
   snapshot.docs.forEach((doc) => {
     const cafe = { ...doc.data(), id: doc.id };
     displayCafe(cafe, cafeList);
+    if (!cities.includes(cafe.city)) {
+      addCity(cafe, filter);
+      cities.push(cafe.city);
+    }
   });
 });
 
@@ -33,6 +41,7 @@ form.addEventListener('submit', async (e) => {
   const docRef = await addDoc(collection(db, 'cafes'), newCafe);
   console.log('Document written with ID: ', docRef.id);
   form.reset();
+  filter.value = '';
 });
 
 cafeList.addEventListener('click', async (e) => {
@@ -44,4 +53,22 @@ cafeList.addEventListener('click', async (e) => {
   if (confirm('Are you sure?')) {
     await deleteDoc(doc(db, 'cafes', id));
   }
+});
+
+filter.addEventListener('change', (e) => {
+  unsub();
+  const { value } = e.target;
+  let q;
+  if (!value) {
+    q = query(collection(db, 'cafes'));
+  } else {
+    q = query(collection(db, 'cafes'), where('city', '==', value));
+  }
+  onSnapshot(q, (snapshot) => {
+    cafeList.innerHTML = '';
+    snapshot.docs.forEach((doc) => {
+      const cafe = { ...doc.data(), id: doc.id };
+      displayCafe(cafe, cafeList);
+    });
+  });
 });

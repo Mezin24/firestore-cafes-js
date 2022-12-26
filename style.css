@@ -62,7 +62,8 @@ li button {
   cursor: pointer;
 }
 
-form input {
+form input,
+select {
   float: left;
   width: 38%;
   margin: 0;
@@ -86,6 +87,10 @@ form:after {
   content: '';
   clear: both;
   display: block;
+}
+
+form select {
+  margin-top: 1rem;
 }
 
 button {
