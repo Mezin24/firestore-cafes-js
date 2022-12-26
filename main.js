@@ -5,6 +5,8 @@ import {
   collection,
   onSnapshot,
   addDoc,
+  deleteDoc,
+  doc,
 } from 'firebase/firestore';
 import { displayCafe } from './utils.js';
 import './style.css';
@@ -31,4 +33,15 @@ form.addEventListener('submit', async (e) => {
   const docRef = await addDoc(collection(db, 'cafes'), newCafe);
   console.log('Document written with ID: ', docRef.id);
   form.reset();
+});
+
+cafeList.addEventListener('click', async (e) => {
+  const { target } = e;
+  if (!target.classList.contains('btn-delete')) return;
+
+  const id = target.parentNode.getAttribute('data-id');
+
+  if (confirm('Are you sure?')) {
+    await deleteDoc(doc(db, 'cafes', id));
+  }
 });
